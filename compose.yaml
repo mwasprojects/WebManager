@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: webmanager-web-dev
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/workspace
+      - webmanager_node_modules:/workspace/node_modules
+      - webmanager_web_node_modules:/workspace/apps/web/node_modules
+      - webmanager_next_build:/workspace/apps/web/.next
+    restart: unless-stopped
+
+volumes:
+  webmanager_node_modules:
+  webmanager_web_node_modules:
+  webmanager_next_build:
