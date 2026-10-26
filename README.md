@@ -17,6 +17,8 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 - [Quick start](#quick-start)
 - [Manual development workflow](docs/development/MANUAL-CODING.md)
 - [Directory and file map](docs/DIRECTORY-MAP.md)
+- [Dependency management guide](docs/dependencies/README.md)
+- [Dependency register](docs/dependencies/DEPENDENCY-REGISTER.md)
 - [Learning progress tracker](docs/development/PROGRESS.md)
 - [Security at a glance](#security-at-a-glance)
 
