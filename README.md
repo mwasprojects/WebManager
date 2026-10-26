@@ -56,7 +56,7 @@ pnpm build
 
 The first sign-in/sign-up screen is a UI prototype only. Email delivery, one-time-code verification, sessions, database access, and portal authorization are not connected yet. Do not treat it as a production authentication system.
 
-For web application details, see [apps/web/README.md](apps/web/README.md). For security requirements and implementation steps, see [docs/security/README.md](docs/security/README.md).
+For the project documentation index, reading order, stages, architecture, server scaling, database, testing, and deployment guides, start at [docs/README.md](docs/README.md). For web application details, see [apps/web/README.md](apps/web/README.md); for detailed authentication and security requirements, see [docs/security/README.md](docs/security/README.md).
 
 ## Vision
 

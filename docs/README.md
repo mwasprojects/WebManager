@@ -1,0 +1,49 @@
+# WebManager Documentation
+
+> This is the documentation home for project planning and engineering. A documented feature is not necessarily implemented. Verify implementation through code, tests, and deployment evidence.
+
+## Read in this order
+
+1. [Overview and documentation map](README.md)
+2. [Stages and roadmap](stages/README.md)
+3. [Architecture](architecture/README.md)
+4. [Security guide](security/README.md)
+5. [Server and request management](server/README.md)
+6. [Authentication implementation plan](authentication/README.md)
+7. [Database and data access](database/README.md)
+8. [Testing and verification](testing/README.md)
+9. [Development workflow and branches](development/README.md)
+10. [Deployment guide](deployment/README.md)
+11. [Architecture Decision Records](decisions/README.md)
+
+The root README is the high-level product summary and quick start. The security guide is the detailed source of truth for authentication policies. If a summary conflicts with a detailed guide, resolve the conflict and update both.
+
+## Current status
+
+The project is at the repository foundation and UI-prototype stage. The sign-in/sign-up screen is not a working authentication system. Email delivery, verification codes, server-side sessions, database persistence, authorization, background processing, and production scaling must not be described as operational until implemented and verified.
+
+Track tasks in GitHub Issues and connect implementation to acceptance criteria through pull requests.
+
+## Documentation rules
+
+- Mark proposals and defaults as proposed until approved.
+- Do not describe a feature as implemented because a plan or interface exists.
+- Give every implementation stage acceptance criteria and evidence.
+- Keep detailed requirements in the relevant guide; avoid duplicating entire sections.
+- Update the source-of-truth guide and summaries when a policy changes.
+- Record significant architectural trade-offs as ADRs.
+- Use UTC in technical timestamp examples unless discussing user-facing local time.
+- Never include secrets, real credentials, private user data, or production tokens.
+
+## Suggested status labels
+
+- proposed — suggested but not approved
+- ready — scope and acceptance criteria are clear
+- in-progress — implementation is underway
+- blocked — depends on a named unresolved item
+- review — ready for review
+- verified — acceptance criteria have evidence
+- released — merged and deployed through the agreed process
+- deferred — intentionally postponed with a reason
+
+A merged change is not automatically verified or released.
