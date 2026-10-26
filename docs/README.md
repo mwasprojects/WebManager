@@ -25,7 +25,7 @@ The root README is the high-level product summary and quick start. The security 
 
 The project now contains an initial full-stack development implementation: Next.js portal UI, Fastify API, PostgreSQL schema, email OTP requests, server-side sessions, and role-gated portal endpoints. These files have been committed but have not yet been independently built, integration-tested, or security-audited. Account-bound portal links, privileged role-management UI, recovery/unlock flows, and complete end-to-end/security tests remain outstanding. Do not describe the system as production-ready until those requirements are implemented and verified.
 
-Track tasks in GitHub Issues and connect implementation to acceptance criteria through pull requests.
+Track tasks in GitHub Issues where useful and connect work to acceptance criteria through commits, checks, and progress notes. The manual learning workflow uses the existing default branch; creating new branches is not required.
 
 ## Documentation rules
 
