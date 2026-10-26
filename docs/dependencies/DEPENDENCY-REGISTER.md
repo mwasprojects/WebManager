@@ -36,7 +36,7 @@ Update this file when dependencies are added, removed, materially upgraded, or a
 |---|---|---|
 | Package manager | `pnpm@10.12.1` in root `package.json` | Pins the intended package manager version. |
 | Workspace members | `apps/*`, `packages/*` in `pnpm-workspace.yaml` | Makes app/package manifests part of the pnpm workspace. |
-| Lockfile | Root `pnpm-lock.yaml`, if present | Reproducible dependency resolution; commit it with manifest changes. |
+| Lockfile | `pnpm-lock.yaml` is currently absent from the repository root. | First setup must run `pnpm install`, review the generated lockfile, and commit it; use frozen installs after that. |
 
 ## Change log
 
@@ -45,6 +45,7 @@ Add new entries at the top. Keep each entry factual and include the relevant com
 ### Initial register
 
 - Created as a learning inventory from the current web and API manifests.
+- Repository review found no root `pnpm-lock.yaml`; generating and committing the initial lockfile is an outstanding setup task.
 - No dependency was added, removed, or upgraded by creating this register.
 - The declared ranges above are taken from the manifests; they are not a statement that these are the newest versions or that the code has been verified against every compatible version.
 
