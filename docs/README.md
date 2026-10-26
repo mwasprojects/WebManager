@@ -12,9 +12,12 @@
 6. [Authentication implementation plan](authentication/README.md)
 7. [Database and data access](database/README.md)
 8. [Testing and verification](testing/README.md)
-9. [Development workflow and branches](development/README.md)
-10. [Deployment guide](deployment/README.md)
-11. [Architecture Decision Records](decisions/README.md)
+9. [Development guide](development/README.md)
+10. [Manual coding workflow](development/MANUAL-CODING.md)
+11. [Manual coding progress tracker](development/PROGRESS.md)
+12. [Directory and file map](DIRECTORY-MAP.md)
+13. [Deployment guide](deployment/README.md)
+14. [Architecture Decision Records](decisions/README.md)
 
 The root README is the high-level product summary and quick start. The security guide is the detailed source of truth for authentication policies. If a summary conflicts with a detailed guide, resolve the conflict and update both.
 
