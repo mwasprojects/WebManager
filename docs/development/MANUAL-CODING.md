@@ -27,13 +27,14 @@ Recommended first inspection order:
 
 1. `README.md` — project purpose and safe local start.
 2. `package.json` and `pnpm-workspace.yaml` — workspace commands and packages.
-3. `apps/web/src/app/page.tsx` — existing sign-in/sign-up page and browser-to-API requests.
-4. `apps/web/src/app/globals.css` and `layout.tsx` — current styles and document layout.
-5. `apps/api/src/server.ts` — HTTP routes and request handling.
-6. `apps/api/src/config.ts`, `db.ts`, and `email.ts` — configuration, database, and email boundaries.
-7. `packages/database/migrations/001_init.sql` — initial database schema.
-8. `compose.yaml` and `.env.example` — local services and configuration names.
-9. `docs/security/README.md` and `docs/testing/README.md` — important requirements and missing verification.
+3. `docs/dependencies/README.md` and `DEPENDENCY-REGISTER.md` — how dependency declarations, lockfiles, and review notes work.
+4. `apps/web/src/app/page.tsx` — existing sign-in/sign-up page and browser-to-API requests.
+5. `apps/web/src/app/globals.css` and `layout.tsx` — current styles and document layout.
+6. `apps/api/src/server.ts` — HTTP routes and request handling.
+7. `apps/api/src/config.ts`, `db.ts`, and `email.ts` — configuration, database, and email boundaries.
+8. `packages/database/migrations/001_init.sql` — initial database schema.
+9. `compose.yaml` and `.env.example` — local services and configuration names.
+10. `docs/security/README.md` and `docs/testing/README.md` — important requirements and missing verification.
 
 Paths above describe the intended/current repository layout; confirm a path exists in your checkout before editing it.
 
@@ -46,10 +47,11 @@ For every task:
 3. **Predict.** Write down what you think the current code does and what your change should do.
 4. **Learn the concept.** Use the linked official documentation or a relevant tutorial in `../RESOURCES.md` if available.
 5. **Implement manually.** Type the change yourself. Do not replace whole files unless the task truly requires it.
-6. **Run a focused check.** Test the smallest relevant behavior, then run broader checks when appropriate.
-7. **Inspect the diff.** Use `git diff --check` and `git diff`. Look for unrelated edits, leaked secrets, and accidental deletions.
-8. **Explain it back.** Add a short note to `PROGRESS.md) in your own words: what changed, why it works, and what remains unclear.
-9. **Commit the completed unit.** Use a clear message, for example `docs: explain web app structure`.
+6. **Manage dependencies deliberately.** Before adding or updating a library, follow `docs/dependencies/README.md`; keep package declarations in the correct workspace manifest and commit the lockfile change.
+7. **Run a focused check.** Test the smallest relevant behavior, then run broader checks when appropriate.
+8. **Inspect the diff.** Use `git diff --check` and `git diff`. Look for unrelated edits, leaked secrets, and accidental deletions.
+9. **Explain it back.** Add a short note to `PROGRESS.md) in your own words: what changed, why it works, and what remains unclear.
+10. **Commit the completed unit.** Use a clear message, for example `docs: explain web app structure`.
 
 ## 4. Setup and run locally
 
