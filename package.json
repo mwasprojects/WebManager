@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "pnpm --filter @webmanager/web dev",
     "build": "pnpm --filter @webmanager/web build",
-    "typecheck": "pnpm --filter @webmanager/web typecheck"
+    "typecheck": "pnpm --filter @webmanager/web typecheck",
+    "docker:dev": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs --follow web"
   }
 }
