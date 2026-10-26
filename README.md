@@ -8,13 +8,16 @@ Business management is one part of the vision—not the boundary of the product.
 
 The platform is planned around a shared Core, an app catalog, reusable UI and service contracts, and independently organized app modules. Development will proceed in small, tested stages, with GitHub as the source of truth, Vercel as the planned web host, and Neon PostgreSQL as the planned hosted database.
 
-> **Status: Planning and repository foundation.** The platform, Core, app catalog, apps, and deployment pipeline are not yet implemented. This README describes the direction and plan; it does not claim that planned features are already available.
+> **Status: Early development baseline.** The repository contains an initial Next.js portal, Fastify API, PostgreSQL migration, and passwordless email-code/session/role-check implementation. The broader app platform is still planned, and the existing authentication slice has not been independently security-audited or verified for production. Documentation describes intent and work in progress; it is not proof that a feature works.
 
 ---
 
 ## Contents
 
 - [Quick start](#quick-start)
+- [Manual development workflow](docs/development/MANUAL-CODING.md)
+- [Directory and file map](docs/DIRECTORY-MAP.md)
+- [Learning progress tracker](docs/development/PROGRESS.md)
 - [Security at a glance](#security-at-a-glance)
 
 - [Vision](#vision)
