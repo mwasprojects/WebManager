@@ -20,7 +20,7 @@ The root README is the high-level product summary and quick start. The security 
 
 ## Current status
 
-The project is at the repository foundation and UI-prototype stage. The sign-in/sign-up screen is not a working authentication system. Email delivery, verification codes, server-side sessions, database persistence, authorization, background processing, and production scaling must not be described as operational until implemented and verified.
+The project now contains an initial full-stack development implementation: Next.js portal UI, Fastify API, PostgreSQL schema, email OTP requests, server-side sessions, and role-gated portal endpoints. These files have been committed but have not yet been independently built, integration-tested, or security-audited. Account-bound portal links, privileged role-management UI, recovery/unlock flows, and complete end-to-end/security tests remain outstanding. Do not describe the system as production-ready until those requirements are implemented and verified.
 
 Track tasks in GitHub Issues and connect implementation to acceptance criteria through pull requests.
 

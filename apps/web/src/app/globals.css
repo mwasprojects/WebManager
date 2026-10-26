@@ -200,3 +200,38 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+
+/* Portal-specific accents distinguish entry points; authorization stays in the API. */
+.entry-page--developer {
+  --night: #182b4b;
+  --night-soft: #223b62;
+  --green: #365c9d;
+  --green-dark: #284575;
+  --mint: #b9d8ff;
+  --focus: #7ca9f5;
+}
+.entry-page--developer .story-panel {
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(185, 216, 255, .18), transparent 42%),
+    linear-gradient(135deg, #14233d, #223d63 72%, #31547d);
+}
+.entry-page--developer .brand-symbol span:nth-child(1),
+.entry-page--developer .brand-symbol span:nth-child(3) { background: #426aa9; }
+.entry-page--admin {
+  --night: #34242b;
+  --night-soft: #4a303b;
+  --green: #8b4559;
+  --green-dark: #6d3043;
+  --mint: #ffd2aa;
+  --focus: #d28ba0;
+}
+.entry-page--admin .story-panel {
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(255, 210, 170, .14), transparent 42%),
+    linear-gradient(135deg, #302129, #50303d 72%, #694052);
+}
+.entry-page--admin .brand-symbol span:nth-child(1),
+.entry-page--admin .brand-symbol span:nth-child(3) { background: #9d5c70; }
+.submit-button:disabled { cursor: wait; opacity: .72; }
+.switch-option:disabled { cursor: not-allowed; opacity: .65; }

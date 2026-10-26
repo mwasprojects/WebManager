@@ -1,0 +1,19 @@
+# Version control
+.git
+.github
+
+# Dependencies and generated output
+node_modules
+**/node_modules
+.pnpm-store
+**/.next
+**/dist
+**/build
+**/coverage
+
+# Local secrets and environment-specific files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*

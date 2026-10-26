@@ -36,27 +36,68 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 
 ## Quick start
 
-The initial application uses Next.js, TypeScript, and pnpm workspaces.
+WebManager now has an initial full-stack development slice: Next.js frontend, Fastify API, PostgreSQL schema, email verification codes, server-side sessions, and role-gated portal endpoints. This is a development baseline and has **not yet been independently built or security-audited**.
 
-Prerequisites: Node.js 20.9 or newer, Git, and pnpm.
+### Prerequisites
+
+Install Git and Docker Desktop (Windows/macOS) or Docker Engine with the Compose plugin (Linux). pnpm is needed if you want to run commands directly on the host.
+
+### 1. Configure local secrets
+
+Copy `.env.example` to `.env`, then generate a local secret:
+
+```bash
+cp .env.example .env
+openssl rand -base64 48
+```
+
+Paste the generated value into `AUTH_SECRET` in `.env`. Keep `.env` untracked. The example database password is for local development only.
+
+### 2. Start the stack
+
+Start the user portal, API, database, and local email inbox:
+
+```bash
+docker compose up --build
+```
+
+Open:
+- User portal: `http://localhost:3000`
+- API health: `http://localhost:4000/health`
+- Captured development emails: `http://localhost:8025`
+
+To also start the developer and admin portal instances:
+
+```bash
+docker compose --profile multi-portal up --build
+```
+
+Then open `http://localhost:3001` for developer and `http://localhost:3002` for admin. The portals share one API/database. The API only grants access when the account has the requested role; local roles must be provisioned deliberately. See [deployment and local role setup](docs/deployment/README.md).
+
+### 3. Try email-code sign-in
+
+1. On the user portal, create an account with an email address you control.
+2. Open Mailpit at `http://localhost:8025` and copy the six-digit code from the captured message.
+3. Return to the portal and enter the code.
+4. Test sign-out, reload, and the API health endpoint.
+
+Mailpit captures messages locally; it does not deliver them to a real inbox. For developer/admin portal testing, follow the local role-provisioning instructions in the deployment guide.
+
+### Useful commands
 
 ```bash
 pnpm install
-pnpm dev
-```
-
-Open the local URL printed by Next.js, normally `http://localhost:3000`.
-
-Useful checks:
-
-```bash
+pnpm dev                 # frontend only; requires the API separately
+pnpm api:dev             # API only; requires DATABASE_URL and AUTH_SECRET
+pnpm db:migrate           # apply the initial database schema
 pnpm typecheck
 pnpm build
+pnpm test
+docker compose logs --follow api
+docker compose down
 ```
 
-The first sign-in/sign-up screen is a UI prototype only. Email delivery, one-time-code verification, sessions, database access, and portal authorization are not connected yet. Do not treat it as a production authentication system.
-
-For the project documentation index, reading order, stages, architecture, server scaling, database, testing, and deployment guides, start at [docs/README.md](docs/README.md). For web application details, see [apps/web/README.md](apps/web/README.md); for detailed authentication and security requirements, see [docs/security/README.md](docs/security/README.md).
+The current first slice does not yet implement the full account-bound portal-link workflow, production role-management UI, account recovery/unlock workflow, or complete automated end-to-end/security tests. Do not use it for real users or production authentication before those requirements are completed and verified. See [the documentation index](docs/README.md) and [the deployment guide](docs/deployment/README.md).
 
 ## Vision
 
