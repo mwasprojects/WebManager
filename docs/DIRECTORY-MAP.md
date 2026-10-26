@@ -12,6 +12,7 @@ WebManager/
 ├── packages/
 │   └── database/            # Database schema/migrations shared by backend code.
 ├── docs/                    # Product, architecture, security, setup, and learning guides.
+│   └── dependencies/        # Dependency policy and human-readable inventory; not installed libraries.
 ├── .github/                 # GitHub workflows and repository contribution configuration, if present.
 ├── package.json             # Root commands, project metadata, and package-manager version.
 ├── pnpm-workspace.yaml      # Declares apps/* and packages/* as pnpm workspace locations.
@@ -81,6 +82,8 @@ Use migrations for intentional schema changes. Do not edit a schema without cons
 - `docs/development/README.md` — existing general development setup guidance.
 - `docs/development/MANUAL-CODING.md` — recommended hands-on learning and change workflow.
 - `docs/development/PROGRESS.md` — learner-owned checklist and work log.
+- `docs/dependencies/README.md` — how to add, update, review, and remove packages using pnpm.
+- `docs/dependencies/DEPENDENCY-REGISTER.md` — direct dependency inventory and change log; manifests and lockfile remain authoritative.
 - `docs/DIRECTORY-MAP.md` — this file: where files belong.
 - `docs/architecture/README.md` — logical system layers and proposed package boundaries.
 - `docs/security/README.md` — security requirements and current implementation caveats.
@@ -103,6 +106,6 @@ A document may describe a future requirement. Confirm its status in code and tes
 | A test | Near the code using the existing test conventions, or the configured test directory | Keep tests discoverable and runnable. |
 | Learning notes or workflow instructions | `docs/development/` | Separate instructions from runtime code. |
 | Security requirements | `docs/security/README.md` | Keep security policy in its source-of-truth guide. |
-| A new dependency or major architecture choice | Relevant package manifest and, when material, an ADR in `docs/decisions/` | Record why the choice is needed. |
+| A new dependency or major architecture choice | Relevant workspace `package.json`, root `pnpm-lock.yaml`, and `docs/dependencies/DEPENDENCY-REGISTER.md`; add an ADR in `docs/decisions/` when material | Declare it in the workspace that uses it, keep the lockfile in sync, and record why it is needed. |
 
 Do not create a new package or reorganize folders just because a future architecture diagram includes one. First identify a real need, discuss the boundary, and update the map if the structure changes.
