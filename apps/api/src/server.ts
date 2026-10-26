@@ -103,7 +103,7 @@ async function requireSession(request: FastifyRequest, reply: FastifyReply, port
      FROM sessions s JOIN users u ON u.id=s.user_id
      WHERE s.token_hash=$1 AND s.portal=$2 AND s.revoked_at IS NULL
        AND s.expires_at > now() AND s.idle_expires_at > now()
-       AND u.disabled_at IS NULL AND u.locked_until IS NULL
+       AND u.disabled_at IS NULL AND (u.locked_until IS NULL OR u.locked_until <= now())
        AND EXISTS (SELECT 1 FROM user_roles ur WHERE ur.user_id=u.id AND ur.role=$2)`,
     [secretDigest(token), portal]
   );
