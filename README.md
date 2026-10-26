@@ -38,16 +38,32 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 
 The initial application uses Next.js, TypeScript, and pnpm workspaces.
 
-Prerequisites: Node.js 20.9 or newer, Git, and pnpm.
+Prerequisites for local development: Node.js 20.9 or newer, Git, and pnpm. For container-based UI testing, install Docker Desktop (Windows/macOS) or Docker Engine with the Docker Compose plugin (Linux).
+
+### Option A — Run locally with pnpm
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open the local URL printed by Next.js, normally `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-Useful checks:
+### Option B — Run in Docker
+
+From the repository root, run:
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:3000`. The development server runs inside a container; source files are mounted so changes can reload in the browser. The Compose port is bound to your computer's loopback interface.
+
+Stop the container with `Ctrl+C`, then run `docker compose down` if needed. To follow logs in another terminal, use `docker compose logs --follow web`. If dependencies or package manifests change, rebuild with `docker compose up --build`.
+
+This Docker setup is for **development/UI testing**, not a production image. It does not configure authentication, email delivery, or a database.
+
+Useful checks (run locally):
 
 ```bash
 pnpm typecheck
