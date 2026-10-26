@@ -5,8 +5,8 @@
   "packageManager": "pnpm@10.12.1",
   "scripts": {
     "dev": "pnpm --filter @webmanager/web dev",
-    "build": "pnpm --filter @webmanager/web build",
-    "typecheck": "pnpm --filter @webmanager/web typecheck",
+    "build": "pnpm --filter @webmanager/web build && pnpm --filter @webmanager/api build",
+    "typecheck": "pnpm --filter @webmanager/web typecheck && pnpm --filter @webmanager/api typecheck",
     "docker:dev": "docker compose up --build",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs --follow web",
