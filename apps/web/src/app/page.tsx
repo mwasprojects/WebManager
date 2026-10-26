@@ -18,153 +18,120 @@ export default function HomePage() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice(
-      "The sign-in interface is ready for the next development step, but authentication is not connected yet. No email was sent and no account was created."
+      "This is a UI preview. Email delivery and account creation are not connected yet, so nothing was sent or saved."
     );
   }
 
+  const isSignup = mode === "signup";
+
   return (
-    <main className="auth-shell">
-      <section className="intro-panel" aria-label="About WebManager">
+    <main className={`entry-page ${isSignup ? "entry-page--signup" : "entry-page--signin"}`}>
+      <header className="topbar">
         <a className="brand" href="/" aria-label="WebManager home">
-          <span className="brand-mark" aria-hidden="true">W</span>
-          <span>WebManager</span>
+          <span className="brand-symbol" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className="brand-word">webmanager<span className="brand-period">.</span></span>
         </a>
+        <span className="topbar-note"><span className="topbar-dot" /> One connected workspace</span>
+      </header>
 
-        <div className="intro-copy">
-          <span className="eyebrow">ONE PLATFORM. MANY POSSIBILITIES.</span>
-          <h1>Everything useful, in one place.</h1>
-          <p>
-            A home for the tools you need, from everyday utilities to
-            productivity and developer apps.
-          </p>
-
-          <div className="feature-list">
-            <div className="feature-item">
-              <span className="feature-icon" aria-hidden="true">✳</span>
-              <div>
-                <strong>One account</strong>
-                <span>Move between your approved WebManager apps.</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon" aria-hidden="true">⌁</span>
-              <div>
-                <strong>Passwordless by design</strong>
-                <span>Use a one-time email code instead of remembering a password.</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <span className="feature-icon" aria-hidden="true">◈</span>
-              <div>
-                <strong>Access with care</strong>
-                <span>Your account permissions determine which portals you can use.</span>
-              </div>
-            </div>
+      <div className="entry-layout">
+        <section className="story-panel" aria-label="About WebManager">
+          <div className="story-orbit" aria-hidden="true">
+            <div className="orbit orbit--outer" />
+            <div className="orbit orbit--middle" />
+            <div className="orbit orbit--inner" />
+            <div className="orbit-core"><span className="core-glyph">w.</span></div>
+            <span className="orbit-node orbit-node--one" />
+            <span className="orbit-node orbit-node--two" />
+            <span className="orbit-node orbit-node--three" />
+            <span className="orbit-node orbit-node--four" />
+            <span className="orbit-spark orbit-spark--one">✳</span>
+            <span className="orbit-spark orbit-spark--two">✦</span>
           </div>
-        </div>
 
-        <p className="panel-footnote">A clearer way to get things done.</p>
-      </section>
-
-      <section className="form-panel" aria-label="Account access">
-        <div className="mobile-brand">
-          <span className="brand-mark" aria-hidden="true">W</span>
-          <span>WebManager</span>
-        </div>
-
-        <div className="auth-card">
-          <div className="card-heading">
-            <span className="eyebrow">YOUR WORKSPACE STARTS HERE</span>
-            <h2>{mode === "signin" ? "Welcome back" : "Create your account"}</h2>
-            <p>
-              {mode === "signin"
-                ? "Enter your email to continue to WebManager."
-                : "Get started with your email address. No password needed."}
+          <div className="story-copy">
+            <p className="overline"><span className="overline-line" /> YOUR SPACE, IN SYNC</p>
+            <h1>{isSignup ? <>Make room for<br /><em>what’s next.</em></> : <>Your digital life.<br /><em>Less scattered.</em></>}</h1>
+            <p className="story-description">
+              {isSignup
+                ? "Bring your tools, projects and everyday work into one thoughtfully connected space."
+                : "A calmer home for the tools you use, the things you build and the work that moves you forward."}
             </p>
           </div>
 
-          <div className="mode-switch" role="tablist" aria-label="Account action">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "signin"}
-              className={mode === "signin" ? "mode-tab active" : "mode-tab"}
-              onClick={() => changeMode("signin")}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === "signup"}
-              className={mode === "signup" ? "mode-tab active" : "mode-tab"}
-              onClick={() => changeMode("signup")}
-            >
-              Sign up
-            </button>
+          <div className="story-bottom">
+            <div className="mini-avatars" aria-hidden="true"><span>W</span><span>✳</span><span>↗</span></div>
+            <p><strong>One account.</strong> A world of possibilities.</p>
+            <span className="story-index">{isSignup ? "02" : "01"} <i>/</i> 02</span>
           </div>
+        </section>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {mode === "signup" && (
-              <label className="field">
-                <span>Your name</span>
-                <input
-                  autoComplete="name"
-                  name="name"
-                  type="text"
-                  placeholder="How should we call you?"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
+        <section className="auth-panel" aria-label={isSignup ? "Create a WebManager account" : "Sign in to WebManager"}>
+          <div className="auth-card">
+            <div className="mobile-intro">
+              <span className="mobile-kicker">{isSignup ? "A FRESH START" : "GOOD TO HAVE YOU BACK"}</span>
+              <h1>{isSignup ? <>Make room for<br /><em>what’s next.</em></> : <>Your digital life.<br /><em>Less scattered.</em></>}</h1>
+            </div>
+
+            <div className="auth-heading">
+              <span className="auth-step">{isSignup ? "LET’S GET YOU SET UP" : "PICK UP WHERE YOU LEFT OFF"}</span>
+              <h2>{isSignup ? "Create your space" : "Welcome back."}</h2>
+              <p>{isSignup ? "Start with the basics. You can shape your workspace as you go." : "Enter your email and we’ll help you get back in."}</p>
+            </div>
+
+            <div className="auth-switch" aria-label="Choose account action">
+              <button type="button" className={!isSignup ? "switch-option is-active" : "switch-option"} aria-pressed={!isSignup} onClick={() => changeMode("signin")}>Sign in <span>↗</span></button>
+              <button type="button" className={isSignup ? "switch-option is-active" : "switch-option"} aria-pressed={isSignup} onClick={() => changeMode("signup")}>Create account <span>＋</span></button>
+            </div>
+
+            <form className="auth-form" onSubmit={handleSubmit}>
+              {isSignup && (
+                <label className="input-group">
+                  <span>Your name</span>
+                  <div className="input-wrap">
+                    <span className="input-icon" aria-hidden="true">✳</span>
+                    <input autoComplete="name" name="name" type="text" placeholder="What should we call you?" value={name} onChange={(event) => setName(event.target.value)} required />
+                  </div>
+                </label>
+              )}
+
+              <label className="input-group">
+                <span>Email address</span>
+                <div className="input-wrap">
+                  <span className="input-icon input-icon--mail" aria-hidden="true">＠</span>
+                  <input autoComplete="email" name="email" type="email" placeholder="you@example.com" value={email} onChange={(event) => setEmail(event.target.value)} required />
+                </div>
               </label>
-            )}
 
-            <label className="field">
-              <span>Email address</span>
-              <input
-                autoComplete="email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </label>
+              {isSignup && <p className="signup-hint"><span aria-hidden="true">✦</span> No password to remember. We’ll use a one-time email code when authentication is connected.</p>}
 
-            <button className="primary-button" type="submit">
-              {mode === "signin" ? "Continue with email" : "Create account"}
-              <span aria-hidden="true">→</span>
-            </button>
-          </form>
+              <button className="submit-button" type="submit">
+                <span>{isSignup ? "Create my account" : "Continue with email"}</span>
+                <span className="submit-arrow" aria-hidden="true">↗</span>
+              </button>
+            </form>
 
-          {notice && (
-            <div className="prototype-notice" role="status">
-              <strong>Preview only</strong>
-              <p>{notice}</p>
+            {notice && <div className="preview-notice" role="status"><strong>Preview mode</strong><span>{notice}</span></div>}
+
+            <div className="privacy-note">
+              <span className="privacy-mark" aria-hidden="true">◇</span>
+              <p><strong>Your account, your boundaries.</strong><br />Portal access will be based on your permissions—not just the page you visit.</p>
             </div>
-          )}
 
-          <div className="security-note">
-            <span className="lock-icon" aria-hidden="true">▣</span>
-            <p>
-              We plan to use short-lived email codes and secure sessions.
-              Your portal access will depend on your account permissions.
-            </p>
+            <p className="legal-note">By continuing, you agree to use WebManager responsibly. Terms and privacy details will be published before launch.</p>
           </div>
 
-          <p className="terms-note">
-            By continuing, you agree to use WebManager responsibly and follow
-            the platform’s terms and privacy policy when they are published.
-          </p>
-        </div>
-
-        <footer className="form-footer">
-          <span>© {new Date().getFullYear()} WebManager</span>
-          <span className="status-pill"><span /> UI preview</span>
-        </footer>
-      </section>
+          <footer className="auth-footer">
+            <span>© {new Date().getFullYear()} WebManager</span>
+            <span className="preview-status"><i /> Design preview</span>
+          </footer>
+        </section>
+      </div>
     </main>
   );
 }
