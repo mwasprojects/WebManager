@@ -62,7 +62,7 @@ pnpm build
 pnpm test
 ```
 
-Use the commands in the root `package.json` as the source of truth. If a command fails, capture the exact error and inspect the relevant package manifest before changing configuration. Before adding, updating, or removing a package, follow the [dependency management guide](../dependencies/README.md) and update the dependency register.
+Use the commands in the root `package.json` as the source of truth. If a command fails, capture the exact error and inspect the relevant package manifest before changing configuration. The repository currently has no root `pnpm-lock.yaml`, so the first dependency setup must run `pnpm install`, review and commit the generated lockfile, then use frozen-lockfile installs afterward. Before adding, updating, or removing a package, follow the [dependency management guide](../dependencies/README.md) and update the dependency register.
 
 ## Manual coding rules
 
