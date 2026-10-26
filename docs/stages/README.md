@@ -1,12 +1,12 @@
 # WebManager Stages and Roadmap
 
-This is the planned sequence, not a claim that any stage is complete. Track individual tasks in GitHub Issues and record evidence before marking a stage verified.
+This is the planned sequence, not a claim that any stage is complete. For manual learning, use [the coding workflow](../development/MANUAL-CODING.md) and [progress tracker](../development/PROGRESS.md). Track significant work in GitHub Issues where useful, and record evidence before marking a stage verified.
 
 ## Stage 0 — Scope and project direction
 - [ ] Confirm first-release scope and the first useful user journey.
 - [ ] Agree on monorepo, app, and shared-Core boundaries.
 - [ ] Record major technology and security decisions.
-- [ ] Define the branch workflow and definition of done.
+- [ ] Define the definition of done and agree to the current learning workflow (small tasks, diff review, tests, and commits on the existing default branch; no new branches required).
 
 **Exit:** scope, boundaries, and workflow are documented.
 
