@@ -50,3 +50,17 @@ docker compose up --build
 ```
 
 The last command rebuilds the image and refreshes installed dependencies after package-manifest changes. The current setup is intended for UI development/testing only; authentication, email, and database services are not configured. No production-readiness claim is implied.
+
+
+## UI testing with a Vercel Preview
+
+Use a Vercel Preview when you need to test the UI on another device or share a build without running your computer as a server.
+
+1. Commit and push your feature branch to GitHub.
+2. Import `mwasprojects/WebManager` into [Vercel](https://vercel.com/) and connect the repository.
+3. Configure the project Root Directory as `apps/web` and confirm Next.js is detected.
+4. Ensure the root pnpm lockfile is committed, then deploy the branch.
+5. Open the Preview URL from Vercel and test responsive layouts, navigation, and browser-console errors.
+6. Review Vercel's build logs for failures. Keep testing on Preview; production deployment is a separate release decision.
+
+Do not configure fake or production credentials for this UI-only stage. For detailed monorepo, environment-variable, and release guidance, see [the deployment guide](../deployment/README.md). Vercel's official [monorepo guide](https://vercel.com/docs/monorepos) explains project root configuration.
