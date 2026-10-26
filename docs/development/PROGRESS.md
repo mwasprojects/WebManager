@@ -21,8 +21,10 @@ For each task, record:
 - [ ] Read `compose.yaml` and identify the web, API, database, and email-capture services.
 - [ ] Read `.env.example`; explain why real secrets must stay in `.env`.
 - [ ] Read the [directory map](../DIRECTORY-MAP.md) and locate each major area in VS Code.
+- [ ] Read [dependency management](../dependencies/README.md) and explain the roles of `package.json`, `pnpm-lock.yaml`, and `node_modules/`.
+- [ ] Compare the web and API manifests and record the purpose of each direct dependency in the [dependency register](../dependencies/DEPENDENCY-REGISTER.md).
 
-**Exit check:** I can describe the repository layout without guessing and can explain how the local development services fit together.
+**Exit check:** I can describe the repository layout without guessing, explain how local services fit together, and distinguish dependency declarations from installed files and the lockfile.
 
 ## Stage 1 — Run and observe the current baseline
 
