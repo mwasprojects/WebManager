@@ -1,6 +1,6 @@
 # WebManager Security Guide
 
-> **Status:** Design baseline for implementation. The policies in this document are proposed requirements; they are not yet implemented or production-tested.
+> **Status:** Mixed. The repository now contains an initial passwordless-auth implementation with PostgreSQL-backed OTP challenges, session records, portal-specific cookies, rate-limit buckets, and role checks. It has not been independently integration-tested, penetration-tested, or approved for production. Requirements not explicitly listed as implemented remain planned.
 
 This guide is the detailed source of truth for WebManager authentication, portal access, authorization, account locks, and security auditing. The root [README](../../README.md) contains a short summary and development quick start.
 
