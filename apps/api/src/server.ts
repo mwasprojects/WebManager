@@ -1,7 +1,7 @@
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
-import { createHash, randomInt } from "node:crypto";
+import { randomInt, timingSafeEqual } from "node:crypto";
 import { pool } from "./db.js";
 import { allowedOrigins, cookieName, parsePortal, randomToken, requiredEnv, secretDigest, type Portal } from "./config.js";
 import { sendVerificationCode } from "./email.js";
@@ -52,7 +52,13 @@ function noStore(reply: FastifyReply) {
   reply.header("Cache-Control", "no-store");
   reply.header("Pragma", "no-cache");
 }
+let lastRateLimitCleanupAt = 0;
 async function rateLimit(key: string, limit: number, windowMinutes: number): Promise<boolean> {
+  // Bound growth from one-off email/IP keys without running cleanup on every request.
+  if (Date.now() - lastRateLimitCleanupAt > 10 * 60 * 1000) {
+    lastRateLimitCleanupAt = Date.now();
+    await pool.query("DELETE FROM rate_limit_buckets WHERE window_started_at < now() - interval '1 day'");
+  }
   const keyHash = secretDigest(key);
   const result = await pool.query<{ hits: number }>(
     `INSERT INTO rate_limit_buckets (key_hash, window_started_at, hits)
@@ -82,11 +88,9 @@ function setSessionCookie(reply: FastifyReply, portal: Portal, token: string) {
 }
 async function createSession(userId: string, portal: Portal, request: FastifyRequest, reply: FastifyReply) {
   const token = randomToken(32);
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   await pool.query(
-    "INSERT INTO sessions (user_id, portal, token_hash, expires_at, idle_expires_at, created_ip_hash, user_agent_hash) VALUES ($1,$2,$3,$4,$5,$6,$7)",
-    [userId, portal, secretDigest(token), expiresAt, new Date(Date.now() + 30 * 60 * 1000),
-      secretDigest(clientIp(request)), secretDigest(String(request.headers["user-agent"] ?? "unknown").slice(0, 500))]
+    "INSERT INTO sessions (user_id, portal, token_hash, expires_at, idle_expires_at, created_ip_hash, user_agent_hash) VALUES ($1,$2,$3,now() + interval '7 days',now() + interval '30 minutes',$4,$5)",
+    [userId, portal, secretDigest(token), secretDigest(clientIp(request)), secretDigest(String(request.headers["user-agent"] ?? "unknown").slice(0, 500))]
   );
   setSessionCookie(reply, portal, token);
 }
@@ -215,21 +219,24 @@ app.post("/auth/verify-code", async (request, reply) => {
   try {
     await client.query("BEGIN");
     const challengeResult = await client.query<{
-      id: string; user_id: string; code_hash: string; attempts: number; expires_at: Date; email: string;
+      id: string; user_id: string; code_hash: string; attempts: number; expires_at: Date; is_valid_time: boolean; email: string;
     }>(
-      `SELECT vc.id, vc.user_id, vc.code_hash, vc.attempts, vc.expires_at, u.email
+      `SELECT vc.id, vc.user_id, vc.code_hash, vc.attempts, vc.expires_at, (vc.expires_at > now()) AS is_valid_time, u.email
        FROM verification_challenges vc JOIN users u ON u.id=vc.user_id
        WHERE u.email=$1 AND vc.portal=$2 AND vc.consumed_at IS NULL
        ORDER BY vc.created_at DESC LIMIT 1 FOR UPDATE OF vc`,
       [email, portal]
     );
     const challenge = challengeResult.rows[0];
-    if (!challenge || new Date(challenge.expires_at) <= new Date() || challenge.attempts >= 5) {
+    if (!challenge || !challenge.is_valid_time || challenge.attempts >= 5) {
       if (challenge) await client.query("UPDATE verification_challenges SET consumed_at=now() WHERE id=$1", [challenge.id]);
       await client.query("COMMIT");
       return reply.code(400).send({ error: "The code is invalid or expired. Request a new code." });
     }
-    if (challenge.code_hash !== secretDigest(code)) {
+    const candidateHash = secretDigest(code);
+    const storedHash = Buffer.from(challenge.code_hash, "hex");
+    const candidateHashBytes = Buffer.from(candidateHash, "hex");
+    if (storedHash.length !== candidateHashBytes.length || !timingSafeEqual(storedHash, candidateHashBytes)) {
       const attempts = challenge.attempts + 1;
       await client.query("UPDATE verification_challenges SET attempts=$2, consumed_at=CASE WHEN $2 >= 5 THEN now() ELSE consumed_at END WHERE id=$1", [challenge.id, attempts]);
       await client.query("COMMIT");
