@@ -1,66 +1,77 @@
-# Development guide
+# Development Guide
 
-## Prerequisites
+This repository already contains an early implementation: a Next.js web portal, Fastify API, PostgreSQL migration, email-code authentication flow, server-side sessions, and portal role checks. It is not yet independently verified or production-ready. Learn the existing implementation before adding new packages or replacing files.
 
-- Node.js 20.9 or newer
-- pnpm
-- Git
+## Read first
 
-## Start the project
+1. Root `README.md` — overview, setup, commands, and current limitations.
+2. [Manual coding workflow](MANUAL-CODING.md) — hands-on VS Code process.
+3. [Progress tracker](PROGRESS.md) — staged learning checklist.
+4. [Directory map](../DIRECTORY-MAP.md) — purpose of the current folders and key files.
+5. [Security guide](../security/README.md) — security requirements and limitations.
+6. [Testing guide](../testing/README.md) — what needs verification.
+7. [Deployment guide](../deployment/README.md) — local stack and hosted deployment notes.
 
-From the repository root:
+## Requirements
+
+- Git.
+- Docker Desktop (Windows/macOS) or Docker Engine with the Compose plugin (Linux).
+- Node.js and pnpm if you prefer running workspace commands on the host instead of relying on the development container.
+
+Check the root README and `.env.example` before starting services.
+
+## Local development
+
+Create a local environment file and set a fresh development-only secret:
+
+```bash
+cp .env.example .env
+openssl rand -base64 48
+```
+
+Paste the generated value into `AUTH_SECRET` in `.env`. Never commit `.env`, credentials, verification codes, session tokens, or production secrets.
+
+Start the stack:
+
+```bash
+docker compose up --build
+```
+
+Open:
+- Web portal: `http://localhost:3000`
+- API health endpoint: `http://localhost:4000/health`
+- Mailpit local email capture: `http://localhost:8025`
+
+Mailpit captures development emails; it does not deliver them to real inboxes. For the developer/admin portal profile and local role provisioning, follow [the deployment guide](../deployment/README.md). Separate ports are not an authorization boundary.
+
+Stop the services with `docker compose down`.
+
+## Host commands
+
+From the repository root, the current root scripts include:
 
 ```bash
 pnpm install
 pnpm dev
-```
-
-## Verify changes
-
-```bash
+pnpm api:dev
+pnpm db:migrate
 pnpm typecheck
 pnpm build
+pnpm test
 ```
 
-## Current milestone
+Use the commands in the root `package.json` as the source of truth. If a command fails, capture the exact error and inspect the relevant package manifest before changing configuration.
 
-The first milestone is the sign-in/sign-up interface and workspace foundation. Authentication is not connected yet. Before implementing it, choose a maintained authentication/session library and an email delivery provider, then write tests for code expiry, replay, throttling, session handling, portal-link ownership, and authorization.
+## Manual coding rules
 
-Do not put real credentials in source control. Use a local untracked `.env.local` file for development secrets and configure deployment secrets through the hosting provider.
+- Use the existing repository and preserve working code.
+- Make one small change at a time; do not recreate the scaffold.
+- Explain non-obvious code with comments; use documentation files for folder purpose and workflow.
+- Inspect `git diff --check` and `git diff` before committing.
+- This learning workflow uses the existing default branch and does not require creating branches. Make small commits and never force-push or rewrite shared history.
+- Run relevant tests and checks; record the actual result in [the progress tracker](PROGRESS.md).
+- A successful start or build is not a security audit. Do not use this early implementation with real users or production credentials.
 
+## Preview deployments
 
-## UI testing with Docker
-
-Docker is an alternative to installing Node.js and pnpm on the host for running the web UI. Install Docker Desktop on Windows/macOS, or Docker Engine plus the Compose plugin on Linux.
-
-From the repository root:
-
-```bash
-docker compose up --build
-```
-
-Open `http://localhost:3000`. Source files are bind-mounted for development reloads. The port is bound to `127.0.0.1` so the development server is not intentionally exposed to the local network.
-
-Useful commands:
-
-```bash
-docker compose logs --follow web
-docker compose down
-docker compose up --build
-```
-
-The last command rebuilds the image and refreshes installed dependencies after package-manifest changes. The current setup is intended for UI development/testing only; authentication, email, and database services are not configured. No production-readiness claim is implied.
-
-
-## UI testing with a Vercel Preview
-
-Use a Vercel Preview when you need to test the UI on another device or share a build without running your computer as a server.
-
-1. Commit and push your feature branch to GitHub.
-2. Import `mwasprojects/WebManager` into [Vercel](https://vercel.com/) and connect the repository.
-3. Configure the project Root Directory as `apps/web` and confirm Next.js is detected.
-4. Ensure the root pnpm lockfile is committed, then deploy the branch.
-5. Open the Preview URL from Vercel and test responsive layouts, navigation, and browser-console errors.
-6. Review Vercel's build logs for failures. Keep testing on Preview; production deployment is a separate release decision.
-
-Do not configure fake or production credentials for this UI-only stage. For detailed monorepo, environment-variable, and release guidance, see [the deployment guide](../deployment/README.md). Vercel's official [monorepo guide](https://vercel.com/docs/monorepos) explains project root configuration.
+Use [the deployment guide](../deployment/README.md) for current hosting notes. Treat hosted previews as a separate environment, use non-production credentials and data, and do not deploy changes merely because they compile.
