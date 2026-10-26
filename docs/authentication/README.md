@@ -1,10 +1,10 @@
 # Authentication Implementation Plan
 
-The detailed policy and acceptance tests live in the [Security Guide](../security/README.md). This page summarizes the implementation sequence.
+The detailed policy and acceptance tests live in the [Security Guide](../security/README.md). This page records the initial implementation and remaining work. The current branch includes email-code request/verification, PostgreSQL-backed challenges, sessions, logout, and role-gated portal access; these are not yet independently integration-tested or security-audited.
 
 ## Intended experience
 
-Three portal experiences are planned: ordinary user at /login, developer at /developer/login, and administrator at /admin/login. These are different entry experiences, not separate authentication systems. A shared backend establishes identity and creates sessions; server-side authorization decides which portals and resources the account may access.
+The local Docker Compose setup can run three portal instances on ports 3000 (user), 3001 (developer), and 3002 (admin). They are configured instances of the same Next.js app and share one API and database. These are different entry experiences, not separate authentication systems. Server-side role checks decide which portals and resources an account may access.
 
 Ordinary users may self-register. Developer and administrator access should be invitation-only or provisioned by an authorized process. An email code must never grant a role.
 
@@ -37,7 +37,7 @@ Proposed defaults for review: 30-minute idle timeout and seven-day absolute life
 
 Use centralized permission checks with resource ownership and tenant/workspace scope. Check permissions in server-side route handlers, server actions, and data operations. Role names alone do not authorize access. Revoked permissions and disabled/locked accounts must be respected even if a browser page remains open.
 
-## Implementation order
+## Current implementation status\n\nImplemented in the initial development slice: user self-registration request, six-digit email verification challenges, five-minute expiry, five-attempt limit, resend invalidation, database-backed rate-limit buckets, portal-specific session cookies, server-side session checks, logout revocation, and role checks. Local SMTP capture is provided by Mailpit.\n\nStill outstanding: account-bound portal links and the required 24-hour cross-account lock policy, a production role-provisioning UI, account recovery/self-service unlock, stronger privileged-account controls, complete security/integration/e2e tests, rate-limit bucket cleanup, and production deployment hardening. Do not infer production readiness from code presence.\n\n## Implementation order
 
 1. Evaluate a maintained authentication/session solution.
 2. Finalize account and permission models.
