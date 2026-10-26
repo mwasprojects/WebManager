@@ -9,6 +9,10 @@
     "typecheck": "pnpm --filter @webmanager/web typecheck",
     "docker:dev": "docker compose up --build",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs --follow web"
+    "docker:logs": "docker compose logs --follow web",
+    "api:dev": "pnpm --filter @webmanager/api dev",
+    "db:migrate": "pnpm --filter @webmanager/api db:migrate",
+    "test": "pnpm --filter @webmanager/api test",
+    "docker:portals": "docker compose --profile multi-portal up --build"
   }
 }

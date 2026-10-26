@@ -8,7 +8,8 @@
     "start": "node dist/server.js",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "db:migrate": "tsx src/migrate.ts"
+    "db:migrate": "tsx src/migrate.ts",
+    "test": "tsx --test src/config.test.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

@@ -36,58 +36,68 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 
 ## Quick start
 
-The initial application uses Next.js, TypeScript, and pnpm workspaces.
+WebManager now has an initial full-stack development slice: Next.js frontend, Fastify API, PostgreSQL schema, email verification codes, server-side sessions, and role-gated portal endpoints. This is a development baseline and has **not yet been independently built or security-audited**.
 
-Prerequisites for local development: Node.js 20.9 or newer, Git, and pnpm. For container-based UI testing, install Docker Desktop (Windows/macOS) or Docker Engine with the Docker Compose plugin (Linux).
+### Prerequisites
 
-### Option A — Run locally with pnpm
+Install Git and Docker Desktop (Windows/macOS) or Docker Engine with the Compose plugin (Linux). pnpm is needed if you want to run commands directly on the host.
+
+### 1. Configure local secrets
+
+Copy `.env.example` to `.env`, then generate a local secret:
 
 ```bash
-pnpm install
-pnpm dev
+cp .env.example .env
+openssl rand -base64 48
 ```
 
-Open `http://localhost:3000`.
+Paste the generated value into `AUTH_SECRET` in `.env`. Keep `.env` untracked. The example database password is for local development only.
 
-### Option B — Run in Docker
+### 2. Start the stack
 
-From the repository root, run:
+Start the user portal, API, database, and local email inbox:
 
 ```bash
 docker compose up --build
 ```
 
-Open `http://localhost:3000`. The development server runs inside a container; source files are mounted so changes can reload in the browser. The Compose port is bound to your computer's loopback interface.
+Open:
+- User portal: `http://localhost:3000`
+- API health: `http://localhost:4000/health`
+- Captured development emails: `http://localhost:8025`
 
-Stop the container with `Ctrl+C`, then run `docker compose down` if needed. To follow logs in another terminal, use `docker compose logs --follow web`. If dependencies or package manifests change, rebuild with `docker compose up --build`.
-
-This Docker setup is for **development/UI testing**, not a production image. It does not configure authentication, email delivery, or a database.
-
-### Option C — Test a hosted Preview on Vercel
-
-Vercel can host a branch-specific Preview URL so you can test the UI outside your local machine.
-
-1. Run `pnpm install` from the repository root and commit the generated `pnpm-lock.yaml`.
-2. Push your feature branch to GitHub.
-3. In [Vercel](https://vercel.com/), import `mwasprojects/WebManager` from GitHub.
-4. Set the Vercel project's **Root Directory** to `apps/web` and confirm the framework is detected as Next.js.
-5. Deploy, then open the Preview URL Vercel provides and test the UI on desktop and mobile.
-6. Review the build logs if the deployment fails. Keep this as a Preview deployment until the project is ready for production.
-
-The current UI prototype does not need database or email secrets. Do not add placeholder credentials or treat a successful deployment as proof that authentication works.
-
-For detailed setup, monorepo configuration, Preview testing, and environment-variable safety, read [the Vercel deployment guide](docs/deployment/README.md).
-
-Useful checks (run locally):
+To also start the developer and admin portal instances:
 
 ```bash
-pnpm typecheck
-pnpm build
+docker compose --profile multi-portal up --build
 ```
 
-The first sign-in/sign-up screen is a UI prototype only. Email delivery, one-time-code verification, sessions, database access, and portal authorization are not connected yet. Do not treat it as a production authentication system.
+Then open `http://localhost:3001` for developer and `http://localhost:3002` for admin. The portals share one API/database. The API only grants access when the account has the requested role; local roles must be provisioned deliberately. See [deployment and local role setup](docs/deployment/README.md).
 
-For the project documentation index, reading order, stages, architecture, server scaling, database, testing, and deployment guides, start at [docs/README.md](docs/README.md). For web application details, see [apps/web/README.md](apps/web/README.md); for detailed authentication and security requirements, see [docs/security/README.md](docs/security/README.md).
+### 3. Try email-code sign-in
+
+1. On the user portal, create an account with an email address you control.
+2. Open Mailpit at `http://localhost:8025` and copy the six-digit code from the captured message.
+3. Return to the portal and enter the code.
+4. Test sign-out, reload, and the API health endpoint.
+
+Mailpit captures messages locally; it does not deliver them to a real inbox. For developer/admin portal testing, follow the local role-provisioning instructions in the deployment guide.
+
+### Useful commands
+
+```bash
+pnpm install
+pnpm dev                 # frontend only; requires the API separately
+pnpm api:dev             # API only; requires DATABASE_URL and AUTH_SECRET
+pnpm db:migrate           # apply the initial database schema
+pnpm typecheck
+pnpm build
+pnpm test
+docker compose logs --follow api
+docker compose down
+```
+
+The current first slice does not yet implement the full account-bound portal-link workflow, production role-management UI, account recovery/unlock workflow, or complete automated end-to-end/security tests. Do not use it for real users or production authentication before those requirements are completed and verified. See [the documentation index](docs/README.md) and [the deployment guide](docs/deployment/README.md).
 
 ## Vision
 
