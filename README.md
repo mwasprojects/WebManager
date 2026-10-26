@@ -14,10 +14,15 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 
 ## Contents
 
+- [Quick start](#quick-start)
+- [Security at a glance](#security-at-a-glance)
+
 - [Vision](#vision)
 - [What WebManager can host](#what-webmanager-can-host)
 - [Product principles](#product-principles)
 - [Architecture](#architecture)
+- [Server scalability and request management](#server-scalability-and-request-management)
+- [Session and time management](#session-and-time-management)
 - [Shared Core](#shared-core)
 - [App catalog and lifecycle](#app-catalog-and-lifecycle)
 - [Recommended technology](#recommended-technology)
@@ -28,6 +33,30 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 - [Repository conventions](#repository-conventions)
 - [Current priorities](#current-priorities)
 - [Reference documentation](#reference-documentation)
+
+## Quick start
+
+The initial application uses Next.js, TypeScript, and pnpm workspaces.
+
+Prerequisites: Node.js 20.9 or newer, Git, and pnpm.
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Open the local URL printed by Next.js, normally `http://localhost:3000`.
+
+Useful checks:
+
+```bash
+pnpm typecheck
+pnpm build
+```
+
+The first sign-in/sign-up screen is a UI prototype only. Email delivery, one-time-code verification, sessions, database access, and portal authorization are not connected yet. Do not treat it as a production authentication system.
+
+For the project documentation index, reading order, stages, architecture, server scaling, database, testing, and deployment guides, start at [docs/README.md](docs/README.md). For web application details, see [apps/web/README.md](apps/web/README.md); for detailed authentication and security requirements, see [docs/security/README.md](docs/security/README.md).
 
 ## Vision
 
@@ -145,6 +174,89 @@ This is a starting proposal to review in the repository-foundation phase. Do not
 
 The first apps may live inside the web application while the app contracts and development pattern are being proven. Extract an app or capability into its own package when it has a stable boundary or genuine reuse value. Final package boundaries will be decided before implementation.
 
+## Server scalability and request management
+
+### Design principles
+
+WebManager should scale by controlling resource usage and removing bottlenecks—not by adding infrastructure without evidence. The initial target is a modular monolith with stateless application code, explicit module boundaries, managed infrastructure, and the option to separate workers or services when measurements justify it.
+
+The platform should follow these principles:
+
+- **Stateless application instances:** request handling must not depend on process-local state for sessions, shared rate limits, or durable jobs.
+- **Bounded work:** cap request sizes, concurrency, database connections, query duration, and background queue depth.
+- **Database-aware scaling:** application capacity must respect PostgreSQL connection and query capacity.
+- **Short request paths:** keep interactive requests focused on work required to return a result.
+- **Asynchronous work:** move slow, nonessential work such as report generation and bulk processing to durable background jobs when needed.
+- **Graceful overload:** reject excess work predictably instead of allowing unbounded queues, memory growth, or cascading failures.
+- **Measure before scaling:** use latency, error rate, database saturation, queue depth, and resource metrics to identify bottlenecks.
+- **Keep operations proportional to need:** do not introduce Redis, a message broker, microservices, or Kubernetes before there is a demonstrated requirement.
+
+### Request lifecycle
+
+Protected endpoints should apply the relevant controls in a consistent order:
+
+1. Establish a request ID and tracing context.
+2. Enforce HTTP method, request-size, and content-type limits.
+3. Apply abuse protection and distributed rate limits where appropriate.
+4. Authenticate the caller when required.
+5. Validate untrusted input.
+6. Authorize the action and enforce workspace/tenant data boundaries.
+7. Apply concurrency and timeout budgets to expensive work.
+8. Execute business logic and controlled data access.
+9. Return a consistent response and record safe metrics.
+
+The exact ordering may vary by endpoint. Public authentication endpoints, for example, should apply rate limits before expensive authentication work. Authorization must be checked on the server for every protected operation; hiding a UI link is not authorization.
+
+API responses should use a documented, consistent success/error format and include a request ID where useful. Rate-limited requests should return HTTP 429 and an appropriate `Retry-After` header when practical. Capacity exhaustion may require HTTP 503. Responses must not expose stack traces, database internals, secrets, or unnecessary personal data.
+
+### Database and connection management
+
+- Choose and document a connection strategy compatible with the deployment runtime and Neon PostgreSQL.
+- Avoid creating an uncontrolled connection pool per request or per short-lived invocation.
+- Set connection, query, and transaction timeouts appropriate to each operation.
+- Keep transactions short and avoid holding database locks while calling external services.
+- Paginate large results, enforce maximum page sizes, select only required columns, and avoid N+1 queries.
+- Add indexes based on measured access patterns and reviewed query plans.
+- Monitor connection usage, pool wait time, slow queries, lock waits, and database saturation.
+- Reserve a deliberate connection budget for application instances, background workers, and migrations.
+
+Scaling the web application does not automatically scale the database, email provider, cache, or job workers. Each dependency has independent capacity limits.
+
+### Caching and rate limiting
+
+Begin with query optimization and safe HTTP/CDN caching for public, infrequently changing content. Add a shared cache only when measurement shows a benefit and invalidation rules are understood.
+
+Do not cache authentication challenges, session-revocation state, account-lock status, or authorization decisions without an explicit freshness and invalidation design. Stale security data must not grant access that has been revoked.
+
+Rate limits control request frequency; concurrency limits control the number of operations running at once. Both may be necessary. Limits that must apply across application instances need a shared/distributed mechanism rather than process-local memory alone. Authentication controls must not let an attacker trivially lock another account by sending requests on its behalf.
+
+### Background jobs and backpressure
+
+Slow or nonessential work—such as bulk imports, exports, report generation, notifications, and file processing—may be moved to a durable queue and independent workers. Authentication and authorization decisions should remain in the synchronous request path when needed to safely accept the action.
+
+A production job system should define bounded concurrency, retries with exponential backoff and jitter, maximum attempts, idempotency, job timeouts, failure/dead-letter handling, graceful shutdown, and queue monitoring. For business changes that must reliably trigger a job, evaluate the transactional outbox pattern. Do not assume a serverless request handler is a persistent worker; select a runtime suitable for the job's execution requirements.
+
+Use backpressure when capacity is exhausted: reject or defer excess work, cap queue growth, and slow workers when dependencies are saturated. Retries must be bounded and should not amplify an outage.
+
+### Observability and health
+
+Track request volume, p50/p95/p99 latency, error and timeout rates, rate-limit events, expensive-operation concurrency, database connection/query metrics, and background-job queue depth, age, retries, and failures. Use request IDs and structured logs to correlate work across modules. Logs must never include raw authentication codes, session tokens, or email-link secrets.
+
+Distinguish application liveness, readiness to receive traffic, and dependency health. A temporary dependency failure should not trigger uncontrolled restart loops or add unnecessary load.
+
+### Initial deployment strategy
+
+For the planned Vercel and Neon deployment:
+
+- Use the managed application platform for compatible Next.js routes and server-side functions.
+- Configure Neon connection handling and limits for the actual runtime.
+- Use shared rate limiting when limits must apply across instances.
+- Add a durable queue and independent worker runtime when asynchronous tasks require them.
+- Use object storage for large uploads or generated artifacts if those features are introduced.
+- Add managed caching only when metrics justify the operational cost.
+
+Before production, test normal load, gradual load increases, traffic spikes, sustained load, database saturation, queue backlog, dependency failure, and recovery. Agree on performance targets and test them; do not claim capacity without evidence.
+
 ## Shared Core
 
 The Core exists to prevent duplication of genuinely shared platform behavior. Its planned responsibilities include:
@@ -230,6 +342,47 @@ Before locking in authentication, evaluate a maintained solution against the req
 ### Hosting constraints
 
 Vercel is the planned host for the web application and compatible server-side functions. Do not assume ordinary request-handling functions are persistent workers. Scheduled and background work must use an execution model or service suitable for the actual requirement.
+
+## Security at a glance
+
+WebManager is designed for passwordless email-code authentication for human accounts, account-bound portal links, centralized server-side authorization, and auditable security events. The initial policy proposes five-minute email codes and ten-minute portal links. Expired links are rejected and logged when detectable, without locking accounts. A qualifying attempt by a different authenticated account to use a still-valid account-bound link is rejected and applies the defined 24-hour lock to the account making the attempt—not the account that owns the link.
+
+This is a design, not an implemented security guarantee. The sign-in page is currently a frontend prototype. Never deploy it as a working login system until server-side authentication, session handling, authorization, and security tests are complete.
+
+**Detailed policy and implementation checklist:** [Security Guide](docs/security/README.md).
+
+## Session and time management
+
+Session and timestamp handling are shared security infrastructure, not independent logic that each route should reimplement.
+
+### Time conventions
+
+- Use UTC for application-level timestamps and store database instants in PostgreSQL `TIMESTAMPTZ`.
+- Use a shared, injectable clock and duration utilities for expiry calculations and deterministic tests.
+- Convert timestamps to a user's preferred timezone only for display.
+- Treat browser-provided timestamps as untrusted.
+- Synchronize production host clocks and compare expiry using server-side time.
+- Store explicit expiry timestamps for sessions, verification challenges, account locks, and account-bound links.
+- Use consistent expiry-boundary behavior: an item is expired when current server time is greater than or equal to its expiry timestamp.
+
+### Session lifecycle
+
+Sessions should use cryptographically random opaque identifiers, store only an appropriate token hash server-side, and be delivered in Secure, HttpOnly cookies with a deliberate SameSite policy. Production requires HTTPS. Rotate session identifiers after authentication and relevant privilege changes; revoke server-side sessions on logout, account disablement, and security events as defined by policy.
+
+The session system should support validation, idle and absolute expiry, revocation, last-activity tracking, and multiple sessions/devices. Authorization must still be checked server-side for protected operations; possession of a valid session alone does not imply access to every portal or resource.
+
+Proposed initial policy for review—not implemented guarantees:
+
+- Idle timeout: 30 minutes.
+- Absolute session lifetime: 7 days.
+- Email verification code lifetime: 5 minutes, with at most 5 attempts per challenge.
+- Account-bound portal link lifetime: 10 minutes and single-use.
+- A qualifying attempt by a different authenticated account to use a still-valid account-bound link is rejected and locks the account making the attempt for 24 hours, not the link owner's account.
+- Expired links are rejected and logged when detectable, but do not trigger account lockout.
+- Resending a verification code invalidates the previous code.
+- Admin sessions should receive stronger controls and shorter limits where appropriate.
+
+The idle and absolute session limits must be reviewed before implementation, particularly for privileged accounts. Session revocation and account-lock rules must be enforced by shared server-side logic and tested at expiry boundaries, under concurrent requests, and after replay attempts.
 
 ## Security and privacy
 
@@ -434,6 +587,22 @@ A task is complete only when all applicable conditions are met:
 - Update documentation when architecture, setup, or behavior changes.
 - Do not add infrastructure or dependencies without a clear need.
 - Update the roadmap when priorities or decisions change.
+
+## Server and request-management priorities
+
+The following work should be implemented incrementally after inspecting the current repository and confirming the existing foundation:
+
+1. Define API response/error contracts, request IDs, and structured logging.
+2. Add request validation, payload limits, and explicit timeout conventions.
+3. Design the database client and connection budget for the chosen deployment runtime.
+4. Implement reusable pagination and transaction conventions.
+5. Define distributed rate-limiting and concurrency-control interfaces.
+6. Implement session and time utilities with injectable clocks.
+7. Add safe health checks and baseline application/database metrics.
+8. Introduce a durable job queue and independent workers only when the first suitable background tasks require them.
+9. Run controlled load and failure-recovery tests before claiming production capacity.
+
+**Acceptance criteria:** request and resource limits are documented, failure responses are predictable, security-sensitive state remains authoritative, and performance claims are backed by repeatable measurements. These capabilities are planned; this README does not claim they are already implemented.
 
 ## Current priorities
 

@@ -1,0 +1,11 @@
+{
+  "name": "webmanager",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "dev": "pnpm --filter @webmanager/web dev",
+    "build": "pnpm --filter @webmanager/web build",
+    "typecheck": "pnpm --filter @webmanager/web typecheck"
+  }
+}
