@@ -1,6 +1,6 @@
 # Database and Data Access
 
-Neon PostgreSQL is the planned hosted database. Confirm the final client/ORM, schema, and pooling approach with a small proof of concept before implementation.
+Local development now uses PostgreSQL through Docker Compose and the `pg` Node.js client. The initial migration is `packages/database/migrations/001_init.sql`; it creates users, role assignments, verification challenges, sessions, rate-limit buckets, security events, and a migration marker. Neon PostgreSQL remains the planned hosted database. The schema and connection strategy still need integration tests and production review.
 
 ## Principles
 
@@ -22,7 +22,7 @@ Avoid uncontrolled pools per request. Set connection and query timeouts. Monitor
 
 Agree on primary-key strategy, foreign-key naming, unique constraints for normalized identifiers, UTC-compatible TIMESTAMPTZ timestamps, explicit expiry fields, state constraints, indexes, and retention/deletion behavior before production schema work.
 
-Potential authentication entities include users/accounts, verification challenges, sessions, roles, permissions, role assignments, portal links, and security events. Review the normalized schema and indexes before writing migrations.
+The initial schema includes users, verification challenges, sessions, role assignments, rate-limit buckets, and security events. Account-bound portal-link tables, richer permissions/scopes, tenant entities, and operational cleanup jobs are not implemented yet. Review the normalized schema and indexes before adding further migrations.
 
 ## Query performance
 
@@ -45,7 +45,7 @@ Keep migrations versioned and reviewed. Test applying them to a clean database a
 
 ## Acceptance checklist
 
-- [ ] Client and migration tool selected and documented.
+- [x] Initial PostgreSQL client (`pg`) and migration SQL are present (integration-tested status not yet verified).
 - [ ] Environment-specific credentials separated.
 - [ ] Connection strategy and budget documented.
 - [ ] Migrations repeatable and tested.
