@@ -26,3 +26,18 @@ The `/api/health` route is a minimal liveness check and intentionally reveals no
 3. Implement code issuance, expiry, one-time consumption, and rate limiting.
 4. Add database schema and migrations.
 5. Add session and authorization tests before protecting portals.
+
+
+## UI testing with Docker
+
+From the repository root, run:
+
+```bash
+docker compose up --build
+```
+
+Then open `http://localhost:3000`. The Compose service mounts the repository into the container and uses named volumes for dependencies and Next.js build output. This avoids mixing Linux container dependencies with host-installed dependencies.
+
+Use `docker compose logs --follow web` to inspect server output and `docker compose down` to stop/remove the container. After changing package manifests or dependencies, rebuild using `docker compose up --build`.
+
+This is a development container only. It does not provide a production image or implement the authentication prototype's backend.
