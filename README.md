@@ -63,6 +63,21 @@ Stop the container with `Ctrl+C`, then run `docker compose down` if needed. To f
 
 This Docker setup is for **development/UI testing**, not a production image. It does not configure authentication, email delivery, or a database.
 
+### Option C — Test a hosted Preview on Vercel
+
+Vercel can host a branch-specific Preview URL so you can test the UI outside your local machine.
+
+1. Run `pnpm install` from the repository root and commit the generated `pnpm-lock.yaml`.
+2. Push your feature branch to GitHub.
+3. In [Vercel](https://vercel.com/), import `mwasprojects/WebManager` from GitHub.
+4. Set the Vercel project's **Root Directory** to `apps/web` and confirm the framework is detected as Next.js.
+5. Deploy, then open the Preview URL Vercel provides and test the UI on desktop and mobile.
+6. Review the build logs if the deployment fails. Keep this as a Preview deployment until the project is ready for production.
+
+The current UI prototype does not need database or email secrets. Do not add placeholder credentials or treat a successful deployment as proof that authentication works.
+
+For detailed setup, monorepo configuration, Preview testing, and environment-variable safety, read [the Vercel deployment guide](docs/deployment/README.md).
+
 Useful checks (run locally):
 
 ```bash
