@@ -10,7 +10,9 @@ This repository already contains an early implementation: a Next.js web portal, 
 4. [Directory map](../DIRECTORY-MAP.md) — purpose of the current folders and key files.
 5. [Security guide](../security/README.md) — security requirements and limitations.
 6. [Testing guide](../testing/README.md) — what needs verification.
-7. [Deployment guide](../deployment/README.md) — local stack and hosted deployment notes.
+7. [Dependency management](../dependencies/README.md) — how to add, update, review, and remove dependencies safely.
+8. [Dependency register](../dependencies/DEPENDENCY-REGISTER.md) — current direct dependency inventory and change log.
+9. [Deployment guide](../deployment/README.md) — local stack and hosted deployment notes.
 
 ## Requirements
 
@@ -60,7 +62,7 @@ pnpm build
 pnpm test
 ```
 
-Use the commands in the root `package.json` as the source of truth. If a command fails, capture the exact error and inspect the relevant package manifest before changing configuration.
+Use the commands in the root `package.json` as the source of truth. If a command fails, capture the exact error and inspect the relevant package manifest before changing configuration. Before adding, updating, or removing a package, follow the [dependency management guide](../dependencies/README.md) and update the dependency register.
 
 ## Manual coding rules
 
