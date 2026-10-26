@@ -15,6 +15,10 @@ WebManager uses pnpm workspaces. Keep dependency declarations in the `package.js
 
 **Do not create a second hand-maintained folder of downloaded library code.** That duplicates pnpm's job and makes versions, security updates, and clean installation harder to manage.
 
+## Current repository status
+
+At the time this guide was checked, the repository root did **not** contain `pnpm-lock.yaml`. That means the first local dependency setup must generate it intentionally. From the repository root, use the pinned pnpm version (`pnpm@10.12.1`) and run `pnpm install`; review the generated lockfile and install results, then commit `pnpm-lock.yaml` together with any intended manifest changes. After the lockfile has been committed and matches the manifests, use `pnpm install --frozen-lockfile` for repeatable installs. Do not run the frozen command before the lockfile exists and assume it will generate one.
+
 ## Current workspace layout
 
 ```text
@@ -155,7 +159,7 @@ Never delete packages directly from `node_modules` as a way of removing them fro
 
 ## Clean install and lockfile
 
-When the lockfile is present and current, use:
+When the lockfile has been generated, committed, and matches the manifests, use:
 
 ```bash
 pnpm install --frozen-lockfile
