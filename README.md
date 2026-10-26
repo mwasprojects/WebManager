@@ -14,6 +14,9 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 
 ## Contents
 
+- [Quick start](#quick-start)
+- [Security at a glance](#security-at-a-glance)
+
 - [Vision](#vision)
 - [What WebManager can host](#what-webmanager-can-host)
 - [Product principles](#product-principles)
@@ -28,6 +31,30 @@ The platform is planned around a shared Core, an app catalog, reusable UI and se
 - [Repository conventions](#repository-conventions)
 - [Current priorities](#current-priorities)
 - [Reference documentation](#reference-documentation)
+
+## Quick start
+
+The initial application uses Next.js, TypeScript, and pnpm workspaces.
+
+Prerequisites: Node.js 20.9 or newer, Git, and pnpm.
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Open the local URL printed by Next.js, normally `http://localhost:3000`.
+
+Useful checks:
+
+```bash
+pnpm typecheck
+pnpm build
+```
+
+The first sign-in/sign-up screen is a UI prototype only. Email delivery, one-time-code verification, sessions, database access, and portal authorization are not connected yet. Do not treat it as a production authentication system.
+
+For web application details, see [apps/web/README.md](apps/web/README.md). For security requirements and implementation steps, see [docs/security/README.md](docs/security/README.md).
 
 ## Vision
 
@@ -230,6 +257,14 @@ Before locking in authentication, evaluate a maintained solution against the req
 ### Hosting constraints
 
 Vercel is the planned host for the web application and compatible server-side functions. Do not assume ordinary request-handling functions are persistent workers. Scheduled and background work must use an execution model or service suitable for the actual requirement.
+
+## Security at a glance
+
+WebManager is designed for passwordless email-code authentication for human accounts, account-bound portal links, centralized server-side authorization, and auditable security events. The initial policy proposes five-minute email codes and ten-minute portal links. Expired links are rejected and logged when detectable, without locking accounts. A qualifying attempt by a different authenticated account to use a still-valid account-bound link is rejected and applies the defined 24-hour lock to the account making the attempt—not the account that owns the link.
+
+This is a design, not an implemented security guarantee. The sign-in page is currently a frontend prototype. Never deploy it as a working login system until server-side authentication, session handling, authorization, and security tests are complete.
+
+**Detailed policy and implementation checklist:** [Security Guide](docs/security/README.md).
 
 ## Security and privacy
 
